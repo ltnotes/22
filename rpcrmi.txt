@@ -1,0 +1,64 @@
+1. Remote Interface (AddService.java)
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface AddService extends Remote {
+    int add(int a, int b) throws RemoteException;
+}
+
+2. Implementation Class (AddServiceImpl.java)
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+public class AddServiceImpl extends UnicastRemoteObject implements AddService {
+
+    protected AddServiceImpl() throws RemoteException {
+        super();
+    }
+
+    public int add(int a, int b) throws RemoteException {
+        return a + b;
+    }
+}
+
+3. Server Program (Server.java)
+import java.rmi.Naming;
+import java.rmi.registry.LocateRegistry;
+
+public class Server {
+    public static void main(String[] args) {
+        try {
+            // Create object
+            AddService service = new AddServiceImpl();
+
+            // Start RMI registry on port 1099
+            LocateRegistry.createRegistry(1099);
+
+            // Bind object to name
+            Naming.rebind("rmi://localhost/AddService", service);
+
+            System.out.println("Server started...");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+4. Client Program (Client.java)
+import java.rmi.Naming;
+
+public class Client {
+    public static void main(String[] args) {
+        try {
+            // Lookup remote object
+            AddService service = (AddService) Naming.lookup("rmi://localhost/AddService");
+
+            // Call remote method
+            int result = service.add(10, 5);
+
+            System.out.println("Result = " + result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
