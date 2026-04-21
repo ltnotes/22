@@ -1,0 +1,59 @@
+Server (Server.java)
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class Server {
+    static List<PrintWriter> clients = new ArrayList<>();
+
+    public static void main(String[] args) throws Exception {
+        ServerSocket ss = new ServerSocket(5000);
+        System.out.println("Server running...");
+
+        while (true) {
+            Socket s = ss.accept();
+            PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+            clients.add(out);
+
+            new Thread(() -> {
+                try {
+                    BufferedReader in = new BufferedReader(
+                        new InputStreamReader(s.getInputStream()));
+                    String msg;
+                    while ((msg = in.readLine()) != null) {
+                        for (PrintWriter c : clients)
+                            c.println(msg); // broadcast
+                    }
+                } catch (Exception e) {}
+            }).start();
+        }
+    }
+}
+
+
+Client (Client.java)
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class Client {
+    public static void main(String[] args) throws Exception {
+        Socket s = new Socket("localhost", 5000);
+
+        new Thread(() -> {
+            try {
+                BufferedReader in = new BufferedReader(
+                    new InputStreamReader(s.getInputStream()));
+                String msg;
+                while ((msg = in.readLine()) != null)
+                    System.out.println(msg);
+            } catch (Exception e) {}
+        }).start();
+
+        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+        Scanner sc = new Scanner(System.in);
+
+        while (true)
+            out.println(sc.nextLine());
+    }
+}
