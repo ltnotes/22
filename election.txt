@@ -1,0 +1,28 @@
+class Bully {
+    static boolean[] active = {true, true, true, true, true}; // 5 processes
+
+    static void election(int initiator) {
+        System.out.println("Process " + initiator + " starts election");
+
+        int newCoordinator = initiator;
+
+        for (int i = initiator + 1; i < active.length; i++) {
+            if (active[i]) {
+                System.out.println("Process " + initiator + " sends message to " + i);
+                newCoordinator = i;
+            }
+        }
+
+        System.out.println("Process " + newCoordinator + " becomes Coordinator\n");
+    }
+
+    public static void main(String[] args) {
+
+        // Suppose highest process (4) fails
+        active[4] = false;
+        System.out.println("Process 4 failed\n");
+
+        // Process 2 detects failure
+        election(2);
+    }
+}
