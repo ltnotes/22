@@ -1,0 +1,40 @@
+public class DeadlockDetection {
+
+    static int n = 4;
+    static int[][] graph = {
+        {0, 1, 0, 0}, // P0 -> P1
+        {0, 0, 1, 0}, // P1 -> P2
+        {0, 0, 0, 1}, // P2 -> P3
+        {0, 1, 0, 0}  // P3 -> P1 (cycle)
+    };
+
+    static boolean[] visited = new boolean[n];
+    static boolean[] stack = new boolean[n];
+
+    static boolean detectCycle(int i) {
+        if (stack[i]) return true;
+        if (visited[i]) return false;
+
+        visited[i] = true;
+        stack[i] = true;
+
+        for (int j = 0; j < n; j++) {
+            if (graph[i][j] == 1) {
+                if (detectCycle(j)) return true;
+            }
+        }
+
+        stack[i] = false;
+        return false;
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i < n; i++) {
+            if (detectCycle(i)) {
+                System.out.println("Deadlock Detected!");
+                return;
+            }
+        }
+        System.out.println("No Deadlock");
+    }
+}
