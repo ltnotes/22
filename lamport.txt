@@ -1,0 +1,41 @@
+class Process {
+    int id, clock = 0;
+
+    Process(int id) {
+        this.id = id;
+    }
+
+    void internal() {
+        clock++;
+        System.out.println("P" + id + " internal event: " + clock);
+    }
+
+    int send() {
+        clock++;
+        System.out.println("P" + id + " sends: " + clock);
+        return clock;
+    }
+
+    void receive(int t) {
+        clock = Math.max(clock, t) + 1;
+        System.out.println("P" + id + " receives: " + clock);
+    }
+}
+
+public class LamportClock {
+    public static void main(String[] args) {
+        Process p1 = new Process(1);
+        Process p2 = new Process(2);
+        Process p3 = new Process(3);
+
+        p1.internal();
+        int t1 = p1.send();
+
+        p2.receive(t1);
+        p2.internal();
+        int t2 = p2.send();
+
+        p3.receive(t2);
+        p3.internal();
+    }
+}
