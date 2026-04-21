@@ -1,0 +1,57 @@
+class Process {
+    int id;
+    int clock = 0;
+    boolean requesting = false;
+
+    Process(int id) {
+        this.id = id;
+    }
+
+    void requestCS(Process[] processes) {
+        requesting = true;
+        clock++;
+        System.out.println("P" + id + " requests CS at time " + clock);
+
+        for (Process p : processes) {
+            if (p.id != this.id) {
+                p.receiveRequest(this.id, clock);
+            }
+        }
+    }
+
+    void receiveRequest(int fromId, int time) {
+        clock = Math.max(clock, time) + 1;
+        System.out.println("P" + id + " received request from P" + fromId);
+
+        // Always send reply (simplified)
+        System.out.println("P" + id + " sends OK to P" + fromId);
+    }
+
+    void enterCS() {
+        System.out.println("P" + id + " ENTERS Critical Section");
+    }
+
+    void releaseCS() {
+        requesting = false;
+        System.out.println("P" + id + " EXITS Critical Section\n");
+    }
+}
+
+public class MutualExclusion {
+    public static void main(String[] args) {
+
+        Process p1 = new Process(1);
+        Process p2 = new Process(2);
+        Process p3 = new Process(3);
+
+        Process[] processes = {p1, p2, p3};
+
+        p1.requestCS(processes);
+        p1.enterCS();
+        p1.releaseCS();
+
+        p2.requestCS(processes);
+        p2.enterCS();
+        p2.releaseCS();
+    }
+}
